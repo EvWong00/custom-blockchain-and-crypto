@@ -12,8 +12,11 @@ class Transaction:
         return {"sender": self.sender, "recipient": self.recipient, "amount": self.amount}
 
     def sign(self, private_key_hex):
-        sk = SigningKey.from_string(bytes.fromhex(private_key_hex, curve = SECP256k1))
-        msg = json.dumps(self.to_dict(), sort_keys = True).encode()
+        # decode the hex into raw bytes first
+        raw_priv = bytes.fromhex(private_key_hex)
+        # then tell SigningKey which curve to use
+        sk = SigningKey.from_string(raw_priv, curve=SECP256k1)
+        msg = json.dumps(self.to_dict(), sort_keys=True).encode()
         self.signature = sk.sign(msg).hex()
 
     def its_valid(self):
